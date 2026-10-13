@@ -40,6 +40,7 @@ comparison_cols = [
     'time_time',
     'model_size',
     'symbolic_model',
+    'r2_train',
     'r2_test',
     'mse_test',
     'mae_test',
@@ -98,7 +99,8 @@ df_results2 = df_results.merge(
 )
 
 # Rankings per trial per dataset
-for col in [c for c in df_results2.columns if c.endswith('test') or c.endswith('size')]:
+for col in [c for c in df_results2.columns
+            if c.endswith('test') or c.endswith('size') or c == 'r2_train']:
     ascending = 'r2' not in col
     df_results2[col + '_rank_per_trial'] = df_results2 \
         .groupby(['dataset', 'random_state'], group_keys=False)[col] \
@@ -113,7 +115,8 @@ df_sum['log_mse_test'] = df_sum['mse_test'].apply(lambda x: np.log(1 + x))
 df_sum['*algorithm*'] = df_sum.apply(lambda row: ('*' if row['symbolic_alg'] else '') + row['algorithm'], axis=1)
 
 # Rankings and normalized scores
-for col in [c for c in df_sum.columns if c.endswith('test') or c.endswith('size')]:
+for col in [c for c in df_sum.columns
+            if c.endswith('test') or c.endswith('size') or c == 'r2_train']:
     ascending = 'r2' not in col
 
     # Rank per dataset

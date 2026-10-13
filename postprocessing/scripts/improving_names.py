@@ -7,7 +7,11 @@ pretrained_algs = [
     'NeSymRes',
     'TPSR',
     'E2E',
-    'QLattice'
+    'FlashANSR',
+    'RASR',
+    'RASR Noise',
+    'QLattice',
+    'SNIP'
 ]
 
 symbolic_algs = [
@@ -22,6 +26,9 @@ symbolic_algs = [
     'EQL',
     'FEAT',
     'FFX',
+    'FlashANSR',
+    'RASR',
+    'RASR Noise',
     'Genetic Engine',
     'Genetic Engine 1p1',
     'Genetic Engine hc',
@@ -35,10 +42,11 @@ symbolic_algs = [
     'Operon',
     'PS-Tree', 
     'PYSR',
-    'QLattice', 
+    'QLattice',
     'Rils-Rols',
-    'TIR', 
-    'TPSR', 
+    'SNIP',
+    'TIR',
+    'TPSR',
     'uDSR'
 ]
 
@@ -87,7 +95,7 @@ def improve_names(df):
     df['algorithm'] = df['algorithm'].apply(lambda x: x.replace('tuned','')) 
 
     # Specific fixes
-    df['algorithm'] = df['algorithm'].map({
+    name_map = {
         'afp' : 'AFP', 
         'afp_ehc' : 'AFP_EHC',
         'afp_fe' : 'AFP_FE',
@@ -99,6 +107,9 @@ def improve_names(df):
         'eql' : 'EQL',
         'feat' : 'FEAT',
         'ffx' : 'FFX',
+        'flashansr' : 'FlashANSR',
+        'rasr' : 'RASR',
+        'rasr_noise' : 'RASR Noise',
         'geneticengine' : 'Genetic Engine',
         'geneticengine_1p1' : 'Genetic Engine 1p1',
         'geneticengine_hc' : 'Genetic Engine hc',
@@ -114,6 +125,7 @@ def improve_names(df):
         'pysr' : 'PYSR', 
         'qlattice' : 'QLattice', 
         'rils-rols' : 'Rils-Rols',
+        'snip' : 'SNIP',
         'sklearn_adaboost' : 'adaboost',
         'sklearn_lasso' : 'Lasso',
         'sklearn_linear' : 'Linear',
@@ -121,10 +133,13 @@ def improve_names(df):
         'sklearn_randomforest' : 'RF',
         'sklearn_ridge' : 'Ridge',
         'sklearn_sgd' : 'SGD',
-        'tir' : 'TIR', 
+        'tir' : 'TIR',
         'tpsr' : 'TPSR', 
         'udsr' : 'uDSR',
         'xgboost' : 'XGB',
-    })
+    }
+
+    # Keep unknown/new algorithm names as-is (instead of turning into NaN).
+    df['algorithm'] = df['algorithm'].map(name_map).fillna(df['algorithm'])
 
     return df

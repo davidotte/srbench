@@ -1,0 +1,15 @@
+scikit-learn
+pandas
+pyarrow
+numpy
+pytest
+sympy
+pyyaml
+pytest-order
+eco2ai
+tabulate
+ipykernel
+seaborn
+tqdm
+textalloc
+pmlb

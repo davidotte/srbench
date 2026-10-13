@@ -231,6 +231,9 @@ def evaluate_model(*,
     t0t = time.time()
     try:
         est.fit(X_train_scaled, y_train_scaled)
+        # if hasattr(est, 'oracle_select'):
+        #     y_test_oracle = sc_y.transform(y_test.reshape(-1, 1)).flatten() if scale_y else y_test
+        #     est.oracle_select(X_test_scaled, y_test_oracle)
     except TimeOutException:
         print("="*80)
         print('WARNING: fitting timed out. If the program does not handle SIGALRM, then it will be killed')
@@ -422,6 +425,14 @@ if __name__ == '__main__':
                         help='Show this help message and exit.')
     parser.add_argument('-ml', action='store', dest='ALG',default=None,type=str, 
             help='Name of estimator (with matching file in methods/)')
+    parser.add_argument(
+        '-algorithm_label',
+        action='store',
+        dest='ALG_LABEL',
+        default=None,
+        type=str,
+        help='Optional label used for output filenames and algorithm field.',
+    )
     parser.add_argument('-results_path', action='store', dest='RDIR',
                         default='results_test', type=str, 
                         help='Name of save file')
@@ -480,7 +491,7 @@ if __name__ == '__main__':
         dataset=args.INPUT_FILE,
         results_path=args.RDIR,
         random_state=args.RANDOM_STATE,
-        est_name=args.ALG,
+        est_name=(args.ALG_LABEL if args.ALG_LABEL is not None else args.ALG),
         est=algorithm.est,  
         model=algorithm.model,
         algorithm=algorithm,

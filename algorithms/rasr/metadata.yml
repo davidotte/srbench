@@ -1,0 +1,13 @@
+authors:
+  - David Otte
+email: david.otte@email.uni-freiburg.de
+name: rasr
+description: |
+  RASR (Reinforced Amortized Symbolic Regression), a transformer-based
+  symbolic regression method with candidate generation and constant
+  refinement.
+
+  This SRBench integration expects a local checkpoint directory mounted at
+  /srbench_pretrained (via -pretrained_dir) and loads checkpoint/config files
+  from there.
+url: none

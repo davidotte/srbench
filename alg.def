@@ -1,0 +1,66 @@
+Bootstrap: docker
+From: mambaorg/micromamba:1.5.8
+
+# Generic per-algorithm definition file, parametrized like alg-Dockerfile
+# (which is parametrized by `ARG ALGORITHM`). Mirrors baseDockerfile +
+# alg-Dockerfile + install_algorithm.sh, so the resulting image matches the
+# Docker-built one without needing a Docker daemon or local disk space for
+# image/tarball/sif. Build on the cluster with fakeroot, from the parent
+# repo root (srbench's parent, not srbench itself):
+#
+#   apptainer build --fakeroot --build-arg ALGORITHM=rasr srbench/images/rasr.sif srbench/alg.def
+#
+# srbench/images/ is where scripts/launch_evals.py looks by default (--images).
+#
+# Note: rasr and snip each need a private "local submodule" copied in that
+# only they use (rasr: the parent repo's src/; snip: srbench's snip source).
+# %files has no if/else, so these are staged conditionally in %setup instead,
+# keyed off {{ ALGORITHM }} -- it's what rasr/install.sh and snip/install.sh
+# expect to find, and other algorithms' builds don't need either.
+
+%arguments
+    ALGORITHM=your_method_name
+
+%files
+    srbench/base_environment.yml /install/base_environment.yml
+    srbench/install_algorithm.sh /install/install_algorithm.sh
+    srbench/algorithms/{{ ALGORITHM }} /install/{{ ALGORITHM }}
+
+%setup
+    if [ "{{ ALGORITHM }}" = "rasr" ]; then
+        mkdir -p "$APPTAINER_ROOTFS/install/_local_submodules/rasr"
+        cp -r src "$APPTAINER_ROOTFS/install/_local_submodules/rasr/src"
+        cp pyproject.toml README.md "$APPTAINER_ROOTFS/install/_local_submodules/rasr/"
+    fi
+    if [ "{{ ALGORITHM }}" = "snip" ]; then
+        mkdir -p "$APPTAINER_ROOTFS/install/_local_submodules"
+        cp -r srbench/snip "$APPTAINER_ROOTFS/install/_local_submodules/snip"
+    fi
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    sed -i -e "s/http/https/" /etc/apt/sources.list.d/debian.sources
+    apt-get update && apt-get install -y --no-install-recommends \
+        rsync curl git procps build-essential \
+        libgmp3-dev libblas-dev liblapack-dev libgsl-dev vim
+    rm -rf /var/lib/apt/lists/*
+
+    # Container /tmp is a small tmpfs sized off the job's memory allocation,
+    # not the workspace disk -- pip/git build dirs (e.g. pmlb, torch) can
+    # blow past it with "No space left on device" even when disk is fine.
+    # Redirect to a directory on the build overlay, which has real disk space.
+    export TMPDIR=/install/tmp
+    mkdir -p "$TMPDIR"
+
+    cd /install
+    bash install_algorithm.sh {{ ALGORITHM }}
+    micromamba clean --all --yes
+
+%environment
+    export ALGORITHM={{ ALGORITHM }}
+
+%runscript
+    exec micromamba run -n base "$@"
+
+%labels
+    Base mambaorg/micromamba:1.5.8

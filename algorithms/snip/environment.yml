@@ -1,0 +1,12 @@
+name: srbench-snip
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - "numpy<2"
+  - pandas
+  - scikit-learn
+  - scipy
+  - sympy
+  - pyyaml

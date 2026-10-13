@@ -10,6 +10,8 @@ symbolic_algs = [
     'EQL',
     'FEAT',
     'FFX',
+    'FlashANSR',
+    'RASR',
     'Genetic Engine',
     'Genetic Engine 1p1',
     'Genetic Engine hc',
@@ -23,9 +25,10 @@ symbolic_algs = [
     'Operon',
     'PS-Tree', 
     'PYSR',
-    'QLattice', 
+    'QLattice',
     'Rils-Rols',
-    'TIR', 
-    'TPSR', 
+    'SNIP',
+    'TIR',
+    'TPSR',
     'uDSR'
 ]

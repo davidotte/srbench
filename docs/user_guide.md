@@ -62,7 +62,7 @@ After installing and configuring the conda environment, the complete black-box e
 
 # Define algorithm groups
 cpu_ml="afp,afp_fe,afp_ehc,bingo,brush,bsr,eplex,eql,feat,ffx,geneticengine,gpgomea,gplearn,gpzgd,itea,operon,ps-tree,pysr,qlattice,rils-rols,tir"
-gpu_ml="e2et,nesymres,tpsr,udsr"  # Pretrained models or checkpoints for NN-based methods
+gpu_ml="e2et,flashansr,rasr,nesymres,snip,tpsr,udsr"  # Pretrained models or checkpoints for NN-based methods
 
 # Common experiment parameters
 COMMON_ARGS="datasets/blackbox/ \

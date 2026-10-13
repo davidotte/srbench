@@ -5,8 +5,11 @@ FROM srbench/base AS build
 ARG ALGORITHM
 ENV ALGORITHM=$ALGORITHM
 WORKDIR "/install"
-COPY --chown=$MAMBA_USER:$MAMBA_USER base_environment.yml install_algorithm.sh . 
-COPY --chown=$MAMBA_USER:$MAMBA_USER ./algorithms/${ALGORITHM} ./${ALGORITHM}
+COPY --chown=$MAMBA_USER:$MAMBA_USER srbench/base_environment.yml srbench/install_algorithm.sh .
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./srbench/algorithms/${ALGORITHM} ./${ALGORITHM}
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./src /install/_local_submodules/rasr/src
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./pyproject.toml ./README.md /install/_local_submodules/rasr/
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./srbench/snip /install/_local_submodules/snip
 ARG MAMBA_DOCKERFILE_ACTIVATE=1     
 RUN bash install_algorithm.sh $ALGORITHM \
     && micromamba clean --all --yes

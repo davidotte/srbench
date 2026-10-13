@@ -65,8 +65,22 @@ df_results = add_metadata(df_results)
 
 # Additional metrics
 df_results['r2_zero_test'] = df_results['r2_test'].apply(lambda x: max(x, 0))
+# Feynman vs. Strogatz split, used to facet plots in groundtruth_results.ipynb
+df_results['data_group'] = df_results['dataset'].apply(
+    lambda x: 'Feynman' if 'feynman' in x else 'Strogatz')
+
+# These columns only exist on rows that went through assess_symbolic_model.py
+# (the .json.updated overlay). If that step hasn't been run yet for some or
+# all results, backfill them as "not assessed" instead of crashing, so
+# r2_test/accuracy_solution-based analysis can proceed without it.
+if 'simplified_symbolic_model' not in df_results.columns:
+    print('WARNING: no results have been through assess_symbolic_model.py yet -- '
+          'symbolic_solution will be False for everything until that step is run.')
+    df_results['simplified_symbolic_model'] = np.nan
 for col in ['symbolic_error_is_zero', 'symbolic_error_is_constant',
             'symbolic_fraction_is_constant']:
+    if col not in df_results.columns:
+        df_results[col] = False
     df_results[col] = df_results[col].fillna(False)
 
 # Mean trial count
@@ -84,6 +98,13 @@ df_results['symbolic_solution'] = df_results[[
 df_results['symbolic_solution'] &= df_results['simplified_symbolic_model'].notna()
 df_results['symbolic_solution'] &= df_results['simplified_symbolic_model'] != '0'
 df_results['symbolic_solution'] &= df_results['simplified_symbolic_model'] != 'nan'
+
+# Rank per dataset/noise level (lower rank = better; r2 is descending, size is ascending)
+noise_col = 'target_noise' if 'target_noise' in df_results.columns else None
+group_cols = ['dataset', noise_col] if noise_col else ['dataset']
+for col, ascending in [('r2_test', False), ('model_size', True)]:
+    df_results[col + '_rank'] = df_results.groupby(group_cols)[col] \
+        .transform(lambda x: round(x.rank(ascending=ascending), 3))
 
 # Compute average ranks and average number of trials per algorithm
 avg_ranks = df_results.groupby('algorithm').agg(

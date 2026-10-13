@@ -114,3 +114,11 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+images/
+pretrained/
+results_*/
+
+/snip/
+# Backups created by postprocessing/scripts/merge_*results.py
+*.backup_*

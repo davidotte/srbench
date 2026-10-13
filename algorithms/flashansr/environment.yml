@@ -1,0 +1,12 @@
+name: srbench-flashansr
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - pip
+  - numpy
+  - pandas
+  - scikit-learn
+  - sympy
+  - pip:
+    - simplipy<0.12

@@ -2,7 +2,17 @@ import pandas as pd
 import numpy as np
 
 def read_file(filename, label='target', use_dataframe=True, sep=None):
-    
+    # Keep parsing deterministic across environments (local vs containerized pandas).
+    if sep is None:
+        lower_name = filename.lower()
+        if lower_name.endswith(('.tsv', '.tsv.gz', '.tab', '.tab.gz')):
+            sep = '\t'
+        elif lower_name.endswith(('.csv', '.csv.gz')):
+            sep = ','
+        else:
+            # Default to CSV separator when file extension is unknown.
+            sep = ','
+
     if filename.endswith('gz'):
         compression = 'gzip'
     else:

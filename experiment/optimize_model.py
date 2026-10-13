@@ -289,7 +289,7 @@ def evaluate_model(*,
     print('training',est)
     
     hyper_params_wrapper = []
-    for i, hp in enumerate(algorithm.hyper_params + [{}]):
+    for i, hp in enumerate(algorithm.hyper_params):  # TODO: + [{}]):
         # By creating a configuration with an empty dict, we evaluate the algorithm with default parameters
 
         # time limits
@@ -360,6 +360,13 @@ def evaluate_model(*,
         print('Tuning time measure:', grid_time)
         
     # performing the final training --------------------------------------------
+    # Drop any cached backend state so the final, timed fit reloads its
+    # checkpoint from disk. This keeps time_time (and ecotracker energy)
+    # consistent with untuned runs -- which start with an empty cache -- while
+    # the tuning phase above still reused the loaded checkpoints.
+    if hasattr(algorithm, 'reset_backend_cache'):
+        algorithm.reset_backend_cache()
+
     if ecotracker:
         print("Initializing ecotracker")
         # file name should be something that will avoid parallel writing
@@ -524,6 +531,14 @@ if __name__ == '__main__':
                         help='Show this help message and exit.')
     parser.add_argument('-ml', action='store', dest='ALG',default=None,type=str, 
             help='Name of estimator (with matching file in methods/)')
+    parser.add_argument(
+        '-algorithm_label',
+        action='store',
+        dest='ALG_LABEL',
+        default=None,
+        type=str,
+        help='Optional label used for output filenames and algorithm field.',
+    )
     parser.add_argument('-results_path', action='store', dest='RDIR',
                         default='results_test', type=str, 
                         help='Name of save file')
@@ -581,7 +596,7 @@ if __name__ == '__main__':
         dataset=args.INPUT_FILE,
         results_path=args.RDIR,
         random_state=args.RANDOM_STATE,
-        est_name=args.ALG,
+        est_name=(args.ALG_LABEL if args.ALG_LABEL is not None else args.ALG),
         est=algorithm.est,  
         model=algorithm.model,
         algorithm=algorithm,

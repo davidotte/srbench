@@ -233,11 +233,8 @@ def get_sym_model(dataset, return_str=True):
     features = [c for c in df.columns if c != 'target']
 #     print('features:',df.columns)
 
-    print(metadata)
-    print(metadata['target'])
-    print(metadata['target']['Raw'])
-    model_str = metadata['target']['Raw']
-    print(model_str)
+    description = metadata['description'].split('\n')
+    model_str = [ms for ms in description if '=' in ms][0].split('=')[-1]
     model_str = model_str.replace('pi','3.1415926535')
     if return_str:
         return model_str

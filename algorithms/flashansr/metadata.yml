@@ -1,0 +1,9 @@
+authors:
+  - FlashANSR authors (see url)
+email: ""
+name: flashansr
+description: |
+  FlashANSR (Fast Amortized Neural Symbolic Regression with Transformers).
+
+  Project repository: https://github.com/psaegert/flash-ansr
+url: https://github.com/psaegert/flash-ansr
