@@ -1,3 +1,7 @@
+> [!NOTE]
+> This is a fork of [cavalab/srbench](https://github.com/cavalab/srbench). The `main` branch tracks the upstream repository.
+> The variant of SRBench used in the evaluation of the [RASR](https://github.com/automl/rasr) paper can be found on the
+> [`rasr-paper`](https://github.com/davidotte/srbench/tree/rasr-paper) branch.
 
 # SRBench: A Living Benchmark for Symbolic Regression
 
